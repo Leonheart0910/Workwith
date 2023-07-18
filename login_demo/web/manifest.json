@@ -1,11 +1,11 @@
 {
-    "name": "ui_combined",
-    "short_name": "ui_combined",
+    "name": "login_demo",
+    "short_name": "login_demo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "UI integrate demo",
+    "description": "LogIn Demonstration.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,5 +1,5 @@
-name: ui_combined
-description: UI integrate demo
+name: login_demo
+description: LogIn Demonstration.
 
 publish_to: 'none'
 
@@ -9,24 +9,28 @@ version: 1.0.0+1
 environment:
   sdk: '>=3.0.5 <4.0.0'
 
+
 dependencies:
   flutter:
     sdk: flutter
 
+
   cupertino_icons: ^1.0.2
   provider: ^6.0.5
-  # for Calendar
-  table_calendar: ^3.0.9
-  intl: ^0.18.0
-  simple_gesture_detector: ^0.2.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+
   flutter_lints: ^2.0.0
+
 
 flutter:
 
+
+  uses-material-design: true
+
   assets:
-    - assets/images/
+    - image/

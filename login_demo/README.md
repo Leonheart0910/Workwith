@@ -1,6 +1,6 @@
-# ui_combined
+# login_demo
 
-UI integrate demo
+LogIn Demonstration.
 
 # 2023/07/13
 - 로그인 화면 작업
@@ -21,3 +21,7 @@ UI integrate demo
 
 # 2023/07/17
 - LogIn UI & Main UI 파일 연결
+
+# 2023/07/18
+- LogIn Demo : 기능 구현
+    - API 통신 요청까지만 구현되어 BE 작업과 연동 필요
