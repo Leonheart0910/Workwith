@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_demo/LogIn/login_demo.dart';
+import 'package:login_demo/UI/project_view.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -16,35 +17,6 @@ class _LogInState extends State<LogIn> {
     final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Log in Test'),
-        backgroundColor: Colors.redAccent,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: (){
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('나중에 Callendar로 바꿀 부분!'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: (){
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('나중에 Task로 바꿀 부분!'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            }
-          )
-        ],
-      ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -113,6 +85,12 @@ class _LogInState extends State<LogIn> {
                                 String username = usernameController.text;
                                 String password = passwordController.text;
                                 login(username, password, context); // 컨트롤러에서 텍스트를 가져와 함수를 호출
+
+                                // 임시로 다음 페이지로 넘어가도록 구현
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const ViewProjectPage())
+                                );
                               },
                               child: const Icon(
                                 Icons.arrow_forward,

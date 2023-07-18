@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:login_demo/project_format/project_format_demo.dart';
+import 'package:provider/provider.dart';
 
 import 'UI/login_ui.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ProjectModel(),
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
