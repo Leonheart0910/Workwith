@@ -17,6 +17,17 @@ class _LogInState extends State<LogIn> {
     final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
+      appBar: AppBar(
+        title: Align(
+          alignment: Alignment.centerLeft, // 텍스트를 왼쪽 정렬
+          child: Padding(
+            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.01), // 오른쪽 패딩을 비율로 조정
+            child: const Text('Test'),
+          ),
+        ),
+        backgroundColor: Colors.redAccent,
+        centerTitle: true,
+      ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -81,16 +92,19 @@ class _LogInState extends State<LogIn> {
                                 backgroundColor: Colors.teal,
                                 minimumSize: const Size(100, 50),
                               ),
-                              onPressed: (){
+                              onPressed: () async {
                                 String username = usernameController.text;
                                 String password = passwordController.text;
-                                login(username, password, context); // 컨트롤러에서 텍스트를 가져와 함수를 호출
 
-                                // 임시로 다음 페이지로 넘어가도록 구현
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const ViewProjectPage())
-                                );
+                                bool loginSuccess = await login(username, password, context); // 컨트롤러에서 텍스트를 가져와 함수를 호출
+
+                                if (loginSuccess) {
+                                  // If login is successful, navigate to the next page
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const ViewProjectPage())
+                                  );
+                                }
                               },
                               child: const Icon(
                                 Icons.arrow_forward,
