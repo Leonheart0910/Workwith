@@ -26,8 +26,15 @@ class Project {
 
 class ProjectModel with ChangeNotifier {
   final List<Project> _projects = [];
+  final List<Project> _endedProjects = [
+    Project(id: 9999, title: 'E1', detail: 'Ended Project1'),
+    Project(id: 9998, title: 'E2', detail: 'Ended Project2'),
+    Project(id: 9997, title: 'E3', detail: 'Ended Project3'),
+    Project(id: 9996, title: 'E4', detail: 'Ended Project4')
+  ];
 
   List<Project> get projects => _projects;
+  List<Project> get endProjects => _endedProjects;
 
   void addProject(Project project) {
     _projects.add(project);

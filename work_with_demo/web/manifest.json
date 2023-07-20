@@ -1,11 +1,11 @@
 {
-    "name": "login_demo",
-    "short_name": "login_demo",
+    "name": "work_with_demo",
+    "short_name": "work_with_demo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "LogIn Demonstration.",
+    "description": "Work With demo version",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
