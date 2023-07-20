@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:login_demo/LogIn/login_demo.dart';
-import 'package:login_demo/UI/project_view.dart';
+import 'package:work_with_demo/LogIn/login_demo.dart';
+import 'package:work_with_demo/UI/project_view.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});

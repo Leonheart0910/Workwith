@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:login_demo/project_format/project_format_demo.dart';
-import 'package:login_demo/add_project/add_new_project.dart';
+import 'package:work_with_demo/project_format/project_format_demo.dart';
+import 'package:work_with_demo/add_project/add_new_project.dart';
 import 'package:provider/provider.dart';
 
 void showNewProjectPopup(BuildContext context) {
