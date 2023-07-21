@@ -34,12 +34,12 @@ app.use(bodyParser.json()); // Parse JSON request bodies
 app.use(cors());  // Use cors middleware
 
 app.post('/', function(req, res) {
-    const username = req.body.username;
+    const id = req.body.id;
     const password = req.body.password;
 
     // You can add authentication logic here
     console.log(`Recieve Data :`);
-    console.log(`Username: ${username}, Password: ${password}`);
+    console.log(`ID: ${id}, Password: ${password}`);
 
     res.json({ token: 'your_token_here' }); // Send back a response with a token
 });
