@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
 import '../DB/DBManager.dart';
 
-class Memos_UI extends StatefulWidget {
-  const Memos_UI({super.key});
+class MemosUI extends StatefulWidget {
+  const MemosUI({super.key});
 
   @override
-  State<Memos_UI> createState() => _Memos_UIState();
+  State<MemosUI> createState() => _MemosUIState();
 }
 
-class _Memos_UIState extends State<Memos_UI> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _detailController = TextEditingController();
-  final TextEditingController _startYearController = TextEditingController();
-  final TextEditingController _startMonthController = TextEditingController();
-  final TextEditingController _startDayController = TextEditingController();
-  final TextEditingController _endYearController = TextEditingController();
-  final TextEditingController _endMonthController = TextEditingController();
-  final TextEditingController _endDayController = TextEditingController();
+class _MemosUIState extends State<MemosUI> {
   List<Map<String, dynamic>> _dataList = [];
 
   @override
@@ -33,8 +25,10 @@ class _Memos_UIState extends State<Memos_UI> {
   }
 
   // 데이터 수정 메서드
-  Future<void> _editData(int id, String title, String detail, int sYear, int sMon, int sDay, int eYear, int eMon, int eDay) async {
-    await DBManager().updateData(id, title, detail, sYear, sMon, sDay, eYear, eMon, eDay);
+  Future<void> _editData(
+      int id, String title, String detail, String color, int sYear, int sMon, int sDay, int sTime, int sMin, int eYear, int eMon, int eDay, int eTime, int eMin
+      ) async {
+    await DBManager().updateData(id, title, detail, color, sYear, sMon, sDay, sTime, sMin, eYear, eMon, eDay, eTime, eMin);
     await loadData(); // 수정 후 데이터 재로드
   }
 
@@ -66,9 +60,14 @@ class _Memos_UIState extends State<Memos_UI> {
                       final TextEditingController startYearController = TextEditingController();
                       final TextEditingController startMonthController = TextEditingController();
                       final TextEditingController startDayController = TextEditingController();
+                      final TextEditingController startTimeController = TextEditingController();
+                      final TextEditingController startMinController = TextEditingController();
                       final TextEditingController endYearController = TextEditingController();
                       final TextEditingController endMonthController = TextEditingController();
                       final TextEditingController endDayController = TextEditingController();
+                      final TextEditingController endTimeController = TextEditingController();
+                      final TextEditingController endMinController = TextEditingController();
+                      String setColor = '0xFF0F8644';
 
                       return AlertDialog(
                         title: const Text('데이터 수정'),
@@ -113,6 +112,25 @@ class _Memos_UIState extends State<Memos_UI> {
                               const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: startTimeController,
+                                      decoration: const InputDecoration(hintText: '시작 시간 입력'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: startMinController,
+                                      decoration: const InputDecoration(hintText: '시작 분 입력'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
                                   Expanded(
                                     child: TextField(
@@ -136,8 +154,57 @@ class _Memos_UIState extends State<Memos_UI> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: endTimeController,
+                                      decoration: const InputDecoration(hintText: '마감 시간 입력'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: endMinController,
+                                      decoration: const InputDecoration(hintText: '마감 분 입력'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  OutlinedButton(
+                                      onPressed: () {
+                                        setColor = '0xFF0F8644';
+                                        print(setColor);
+                                      },
+                                      child: Text('Color 1'),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  OutlinedButton(
+                                    onPressed: () {
+                                      setColor = '0xFF0F0544';
+                                      print(setColor);
+                                    },
+                                    child: Text('Color 2'),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  OutlinedButton(
+                                    onPressed: () {
+                                      setColor = '0xFF434314';
+                                      print(setColor);
+                                    },
+                                    child: Text('Color 3'),
+                                  ),
+                                ],
+                              ),
                             ]
                         ),
+
                         actions: [
                           TextButton(
                             onPressed: () {
@@ -149,14 +216,19 @@ class _Memos_UIState extends State<Memos_UI> {
                             onPressed: () async {
                               final title = titleController.text;
                               final detail = detailController.text;
+                              final String color = setColor;
                               final sYear = int.parse(startYearController.text);
                               final sMon = int.parse(startMonthController.text);
                               final sDay = int.parse(startDayController.text);
+                              final sTime = int.parse(startTimeController.text);
+                              final sMin = int.parse(startMinController.text);
                               final eYear = int.parse(endYearController.text);
                               final eMon = int.parse(endMonthController.text);
                               final eDay = int.parse(endDayController.text);
+                              final eTime = int.parse(endTimeController.text);
+                              final eMin = int.parse(endMinController.text);
 
-                              await DBManager().insertData(title, detail, sYear, sMon, sDay, eYear, eMon, eDay);
+                              await DBManager().insertData(title, detail, color, sYear, sMon, sDay, sTime, sMin, eYear, eMon, eDay, eTime, eMin);
 
                               // 데이터 삽입 후에는 loadData를 다시 호출하여 화면을 갱신합니다.
                               await loadData();
@@ -181,13 +253,21 @@ class _Memos_UIState extends State<Memos_UI> {
               itemBuilder: (BuildContext context, int index) {
                 final item = _dataList[index];
 
-                return ListTile(
-                  title: Text("${item['title']} : ${item['detail']}"),
-                  subtitle: Text("${item['start_year']}/${item['start_mon']}/${item['start_day']} ~ ${item['end_year']}/${item['end_mon']}/${item['end_day']}"),
-                  // 필요한 필드를 추가하여 더 많은 정보를 표시할 수 있습니다.
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+                return Container(
+                  margin: const EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
                     children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("${item['title']} : ${item['detail']}"),
+                          Text("Color : ${item['color']}"),
+                          Text("${item['start_year']}/${item['start_mon']}/${item['start_day']} ${item['start_time']}:${item['start_min']} ~ ${item['end_year']}/${item['end_mon']}/${item['end_day']} ${item['end_time']}:${item['end_min']}"),
+                        ],
+                      ),
+                      const SizedBox(width: 10),
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
@@ -197,12 +277,17 @@ class _Memos_UIState extends State<Memos_UI> {
                             builder: (_) {
                               final editTitleController = TextEditingController(text: item['title']);
                               final editDetailController = TextEditingController(text: item['detail']);
+                              String editColor = item['color'].text;
                               final editSYearController = TextEditingController(text: item['start_year'].toString());
                               final editSMonthController = TextEditingController(text: item['start_mon'].toString());
                               final editSDayController = TextEditingController(text: item['start_day'].toString());
+                              final editSTimeController = TextEditingController(text: item['start_time'].toString());
+                              final editSMinController = TextEditingController(text: item['start_min'].toString());
                               final editEYearController = TextEditingController(text: item['end_year'].toString());
                               final editEMonthController = TextEditingController(text: item['end_mon'].toString());
                               final editEDayController = TextEditingController(text: item['end_day'].toString());
+                              final editETimeController = TextEditingController(text: item['end_time'].toString());
+                              final editEMinController = TextEditingController(text: item['end_min'].toString());
 
                               return AlertDialog(
                                 title: const Text('데이터 수정'),
@@ -244,6 +329,25 @@ class _Memos_UIState extends State<Memos_UI> {
                                           ),
                                         ],
                                       ),
+                                      const SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: editSTimeController,
+                                              decoration: const InputDecoration(hintText: '시작 시간 입력'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: TextField(
+                                              controller: editSMinController,
+                                              decoration: const InputDecoration(hintText: '시작 분 입력'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       const SizedBox(height: 10),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
@@ -270,6 +374,51 @@ class _Memos_UIState extends State<Memos_UI> {
                                           ),
                                         ],
                                       ),
+                                      const SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: editETimeController,
+                                              decoration: const InputDecoration(hintText: '마감 시간 입력'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: TextField(
+                                              controller: editEMinController,
+                                              decoration: const InputDecoration(hintText: '마감 분 입력'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          OutlinedButton(
+                                            onPressed: () {
+                                              editColor = '0xFF0F8644';
+                                            },
+                                            child: Text('Color 1'),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          OutlinedButton(
+                                            onPressed: () {
+                                              editColor = '0xFF0F0544';
+                                            },
+                                            child: Text('Color 2'),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          OutlinedButton(
+                                            onPressed: () {
+                                              editColor = '0xFF434314';
+                                            },
+                                            child: Text('Color 3'),
+                                          ),
+                                        ],
+                                      ),
                                     ]
                                 ),
                                 actions: [
@@ -283,14 +432,21 @@ class _Memos_UIState extends State<Memos_UI> {
                                     onPressed: () async {
                                       final editedTitle = editTitleController.text;
                                       final editedDetail = editDetailController.text;
+                                      final String editedColor = editColor;
                                       final editedSYear = int.parse(editSYearController.text);
                                       final editedSMon = int.parse(editSMonthController.text);
                                       final editedSDay = int.parse(editSDayController.text);
+                                      final editedSTime = int.parse(editSTimeController.text);
+                                      final editedSMin = int.parse(editSMinController.text);
                                       final editedEYear = int.parse(editEYearController.text);
                                       final editedEMon = int.parse(editEMonthController.text);
                                       final editedEDay = int.parse(editEDayController.text);
+                                      final editedETime = int.parse(editETimeController.text);
+                                      final editedEMin = int.parse(editEMinController.text);
 
-                                      await _editData(item['id'], editedTitle, editedDetail, editedSYear, editedSMon, editedSDay, editedEYear, editedEMon, editedEDay);
+                                      await _editData(
+                                          item['id'], editedTitle, editedDetail, editedColor, editedSYear, editedSMon, editedSDay, editedSTime, editedSMin, editedEYear, editedEMon, editedEDay, editedETime, editedEMin
+                                      );
                                       Navigator.pop(context);
                                     },
                                     child: const Text('저장'),

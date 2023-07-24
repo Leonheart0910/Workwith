@@ -35,13 +35,18 @@ class DBManager {
             CREATE TABLE memos(
               id INTEGER PRIMARY KEY, 
               title TEXT, 
-              detail INTEGER, 
+              detail TEXT, 
+              color TEXT,
               start_year INTEGER, 
               start_mon INTEGER, 
               start_day INTEGER, 
+              start_time INTEGER,
+              start_min INTEGER,
               end_year INTEGER, 
               end_mon INTEGER, 
-              end_day INTEGER
+              end_day INTEGER,
+              end_time INTEGER,
+              end_min INTEGER
             )
           ''',
           // id : 테이블의 기본 키, title : 제목, detail : 메모(세부 사항), start_ : 시작 날짜 값, end_ : 마감 날짜 값
@@ -52,7 +57,7 @@ class DBManager {
 
   // 데이터 추가 메소드
   Future<void> insertData(
-      String title, String detail, int sYear, int sMon, int sDay, int eYear, int eMon, int eDay
+      String title, String detail, String color, int sYear, int sMon, int sDay, int sTime, int sMin, int eYear, int eMon, int eDay, int eTime, int eMin
     ) async {
     final db = await database; // 데이터베이스 인스턴스 가져오기
     await db.insert(
@@ -60,12 +65,17 @@ class DBManager {
       {
         'title': title,
         'detail': detail,
+        'color': color,
         'start_year': sYear,
         'start_mon': sMon,
         'start_day': sDay,
+        'start_time' : sTime,
+        'start_min' : sMin,
         'end_year': eYear,
         'end_mon': eMon,
-        'end_day': eDay
+        'end_day': eDay,
+        'end_time' : eTime,
+        'end_min' : eMin
       }, // 추가할 데이터
       conflictAlgorithm: ConflictAlgorithm.replace, // 중복 데이터 처리 방법 설정
     );
@@ -79,7 +89,7 @@ class DBManager {
 
   // 데이터 수정 메소드
   Future<void> updateData(  // id에 대한 정보까지
-      int id, String title, String detail, int sYear, int sMon, int sDay, int eYear, int eMon, int eDay
+      int id, String title, String detail, String color, int sYear, int sMon, int sDay, int sTime, int sMin, int eYear, int eMon, int eDay, int eTime, int eMin
     ) async {
     final db = await database; // 데이터베이스 인스턴스 가져오기
     await db.update(
@@ -87,12 +97,17 @@ class DBManager {
       {
         'title': title,
         'detail': detail,
+        'color': color,
         'start_year': sYear,
         'start_mon': sMon,
         'start_day': sDay,
+        'start_time' : sTime,
+        'start_min' : sMin,
         'end_year': eYear,
         'end_mon': eMon,
-        'end_day': eDay
+        'end_day': eDay,
+        'end_time' : eTime,
+        'end_min' : eMin
       }, // 수정할 데이터
       where: 'id = ?', // 수정할 데이터의 조건 설정
       whereArgs: [id], // 수정할 데이터의 조건 값
