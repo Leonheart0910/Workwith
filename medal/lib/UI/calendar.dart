@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../DB/DBManager.dart';
+
 class CalendarUI extends StatefulWidget {
   const CalendarUI({super.key});
 
@@ -21,7 +23,7 @@ class _CalendarUIState extends State<CalendarUI> {
           Expanded(
             child: SfCalendar(
               view: CalendarView.month,
-              dataSource: MeetingDataSource(_getDataSource()),
+              dataSource: MeetingDataSource(getDataSource()),
               onTap: (CalendarTapDetails details) {
                 print(details.targetElement.toString());
                 if (details.targetElement == CalendarElement.calendarCell) {
@@ -108,21 +110,33 @@ class _CalendarUIState extends State<CalendarUI> {
       ),
     );
   }
-  List<Meeting> _getDataSource() {
+  Future<List<Meeting>> getDataSource() async {
     final List<Meeting> meetings = <Meeting>[];
     final DateTime today = DateTime.now();
-    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    final DateTime endTime = startTime.add(const Duration(hours: -40));
-    meetings.add(Meeting(
-        'Conference', 'detail?', startTime, endTime, const Color(0xFF0F8644)));
-    meetings.add(Meeting(
-        'Conference2', 'detail?', startTime, endTime, const Color(0xFF0F0544)));
-    meetings.add(Meeting(
-        'Conference3', 'detail?', startTime, endTime, const Color(0xFF434314)));
-    meetings.add(Meeting(
-        'Conference4', 'detail?', startTime, endTime, const Color(0xFF004300)));
-    meetings.add(Meeting(
-        'Conference2', 'detail?', startTime, endTime, const Color(0xFF0F0544)));
+    // Use DBManager to get data
+    List<Map<String, dynamic>> dataList = await DBManager().selectData();
+    for (final data in dataList) {
+      final int sYear = data['sYear'] ?? today.year;
+      final int sMon = data['sMon'] ?? today.month;
+      final int sDay = data['sDay'] ?? today.day;
+      final int sTime = data['sTime'] ?? 9;
+      final int sMin = data['sMin'] ?? 0;
+      final int eYear = data['eYear'] ?? today.year;
+      final int eMon = data['eMon'] ?? today.month;
+      final int eDay = data['eDay'] ?? today.day;
+      final int eTime = data['eTime'] ?? 9;
+      final int eMin = data['eMin'] ?? 0;
+
+      print(data);
+      final DateTime startTime = DateTime(sYear, sMon, sDay, sTime, sMin);
+      final DateTime endTime = DateTime(eYear, eMon, eDay, eTime, eMin);
+      final String title = data['title'];
+      final String detail = data['detail'];
+      final Color background = Color(int.parse(data['color'], radix: 16));
+
+      meetings.add(Meeting(title, detail, startTime, endTime, background));
+    }
+
     return meetings;
   }
 }
@@ -133,8 +147,10 @@ class _CalendarUIState extends State<CalendarUI> {
 class MeetingDataSource extends CalendarDataSource {
   /// Creates a meeting data source, which used to set the appointment
   /// collection to the calendar
-  MeetingDataSource(List<Meeting> source) {
-    appointments = source;
+  MeetingDataSource(Future<List<Meeting>> source) {
+    source.then((List<Meeting> meetings) {
+      appointments = meetings;
+    });
   }
 
   @override

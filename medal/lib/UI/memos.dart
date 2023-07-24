@@ -179,7 +179,7 @@ class _MemosUIState extends State<MemosUI> {
                                 children: [
                                   OutlinedButton(
                                       onPressed: () {
-                                        setColor = '0xFF0F8644';
+                                        setColor = 'FF0F8644';
                                         print(setColor);
                                       },
                                       child: Text('Color 1'),
@@ -187,7 +187,7 @@ class _MemosUIState extends State<MemosUI> {
                                   const SizedBox(width: 10),
                                   OutlinedButton(
                                     onPressed: () {
-                                      setColor = '0xFF0F0544';
+                                      setColor = 'FF0F0544';
                                       print(setColor);
                                     },
                                     child: Text('Color 2'),
@@ -195,7 +195,7 @@ class _MemosUIState extends State<MemosUI> {
                                   const SizedBox(width: 10),
                                   OutlinedButton(
                                     onPressed: () {
-                                      setColor = '0xFF434314';
+                                      setColor = 'FF434314';
                                       print(setColor);
                                     },
                                     child: Text('Color 3'),
@@ -277,7 +277,7 @@ class _MemosUIState extends State<MemosUI> {
                             builder: (_) {
                               final editTitleController = TextEditingController(text: item['title']);
                               final editDetailController = TextEditingController(text: item['detail']);
-                              String editColor = item['color'].text;
+                              String editColor = item['color'];
                               final editSYearController = TextEditingController(text: item['start_year'].toString());
                               final editSMonthController = TextEditingController(text: item['start_mon'].toString());
                               final editSDayController = TextEditingController(text: item['start_day'].toString());
@@ -399,21 +399,21 @@ class _MemosUIState extends State<MemosUI> {
                                         children: [
                                           OutlinedButton(
                                             onPressed: () {
-                                              editColor = '0xFF0F8644';
+                                              editColor = 'FF0F8644';
                                             },
                                             child: Text('Color 1'),
                                           ),
                                           const SizedBox(width: 10),
                                           OutlinedButton(
                                             onPressed: () {
-                                              editColor = '0xFF0F0544';
+                                              editColor = 'FF0F0544';
                                             },
                                             child: Text('Color 2'),
                                           ),
                                           const SizedBox(width: 10),
                                           OutlinedButton(
                                             onPressed: () {
-                                              editColor = '0xFF434314';
+                                              editColor = 'FF434314';
                                             },
                                             child: Text('Color 3'),
                                           ),
