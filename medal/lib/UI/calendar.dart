@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-class Calendar_UI extends StatefulWidget {
-  const Calendar_UI({super.key});
+class CalendarUI extends StatefulWidget {
+  const CalendarUI({super.key});
 
   @override
-  State<Calendar_UI> createState() => _Calendar_UIState();
+  State<CalendarUI> createState() => _CalendarUIState();
 }
 
-class _Calendar_UIState extends State<Calendar_UI> {
+class _CalendarUIState extends State<CalendarUI> {
   List<dynamic>? selectedAppointment;
   int agendaMode = 0; // 0 없는거, 1이면 있는거, 2면 목록을 누른거
   int selectedTileIndex = -1;
@@ -69,16 +69,16 @@ class _Calendar_UIState extends State<Calendar_UI> {
                     return Container(
                       height: 100,
                       color: Colors.green,
-                      child: Center(child: Text(selectedAppointment![index-1].eventName)),
+                      child: Center(child: Text(selectedAppointment![index-1].detail)),
                     );
                   }
                   return Card(
                     child: ListTile(
-                        title: Text(selectedAppointment![realindex].eventName),
+                        title: Text('${selectedAppointment![realindex].title}'),
                         leading: SizedBox(
                           height: 50,
                           width: 50,
-                          child: Text(selectedAppointment![realindex].to.toString()),
+                          child: Text(selectedAppointment![realindex].end.toString()),
                         ),
                         onTap: () {
                           setState(() {
@@ -114,15 +114,15 @@ class _Calendar_UIState extends State<Calendar_UI> {
     final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
     final DateTime endTime = startTime.add(const Duration(hours: -40));
     meetings.add(Meeting(
-        'Conference', startTime, endTime, const Color(0xFF0F8644), false));
+        'Conference', 'detail?', startTime, endTime, const Color(0xFF0F8644)));
     meetings.add(Meeting(
-        'Conference2', startTime, endTime, const Color(0xFF0F0544), false));
+        'Conference2', 'detail?', startTime, endTime, const Color(0xFF0F0544)));
     meetings.add(Meeting(
-        'Conference3', startTime, endTime, const Color(0xFF434314), false));
+        'Conference3', 'detail?', startTime, endTime, const Color(0xFF434314)));
     meetings.add(Meeting(
-        'Conference4', startTime, endTime, const Color(0xFF004300), false));
+        'Conference4', 'detail?', startTime, endTime, const Color(0xFF004300)));
     meetings.add(Meeting(
-        'Conference2', startTime, endTime, const Color(0xFF0F0544), false));
+        'Conference2', 'detail?', startTime, endTime, const Color(0xFF0F0544)));
     return meetings;
   }
 }
@@ -139,27 +139,22 @@ class MeetingDataSource extends CalendarDataSource {
 
   @override
   DateTime getStartTime(int index) {
-    return _getMeetingData(index).from;
+    return _getMeetingData(index).start;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return _getMeetingData(index).to;
+    return _getMeetingData(index).end;
   }
 
   @override
   String getSubject(int index) {
-    return _getMeetingData(index).eventName;
+    return _getMeetingData(index).title;
   }
 
   @override
   Color getColor(int index) {
     return _getMeetingData(index).background;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return _getMeetingData(index).isAllDay;
   }
 
   Meeting _getMeetingData(int index) {
@@ -177,20 +172,20 @@ class MeetingDataSource extends CalendarDataSource {
 /// information about the event data which will be rendered in calendar.
 class Meeting {
   /// Creates a meeting class with required details.
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  Meeting(this.title, this.detail, this.start, this.end, this.background);
 
   /// Event name which is equivalent to subject property of [Appointment].
-  String eventName;
+  String title;
+
+  /// Event detail which is equivalent to subject property of [Appointment].
+  String detail;
 
   /// From which is equivalent to start time property of [Appointment].
-  DateTime from;
+  DateTime start;
 
   /// To which is equivalent to end time property of [Appointment].
-  DateTime to;
+  DateTime end;
 
   /// Background which is equivalent to color property of [Appointment].
   Color background;
-
-  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
-  bool isAllDay;
 }

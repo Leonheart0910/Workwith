@@ -65,9 +65,9 @@ class _UIState extends State<UI> {
   Widget getPage() {
     switch (_curIndex) {
       case 0 :
-        return const Memos_UI();
+        return const MemosUI();
       default:
-        return const Calendar_UI();
+        return const CalendarUI();
     }
   }
 }
