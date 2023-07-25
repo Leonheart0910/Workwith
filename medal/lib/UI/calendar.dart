@@ -1,29 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../DB/DBManager.dart';
 
 class CalendarUI extends StatefulWidget {
-  const CalendarUI({super.key});
+  final DateTime data;
+  final int id;
+  const CalendarUI({super.key, required this.data, required this.id});
 
   @override
   State<CalendarUI> createState() => _CalendarUIState();
 }
 
 class _CalendarUIState extends State<CalendarUI> {
+  List<dynamic>? initialAppointment;
+  List<Meeting>? updatedAppointment;
   List<dynamic>? selectedAppointment;
-  int agendaMode = 0; // 0 없는거, 1이면 있는거, 2면 목록을 누른거
-  int selectedTileIndex = -1;
+  int agendaMode = 2; // 0 없는거, 1이면 있는거, 2 초기 화면
+
+  @override
+  void initState() {
+    super.initState();
+    getDataSource(widget.data, widget.id);
+  }
+
+  Future<void> getDataSource(DateTime between, int seletedId) async {
+    final List<Meeting> meetings = <Meeting>[];
+    final DateTime today = DateTime.now();
+    // Use DBManager to get data
+    List<Map<String, dynamic>> dataList = await DBManager().selectData();
+    for (final data in dataList) {
+      final int id = data['id'];
+
+      final int sYear = data['start_year'] ?? today.year;
+      final int sMon = data['start_mon'] ?? today.month;
+      final int sDay = data['start_day'] ?? today.day;
+      final int sTime = data['start_time'] ?? 9;
+      final int sMin = data['start_min'] ?? 0;
+
+      final int eYear = data['end_year'] ?? today.year;
+      final int eMon = data['end_mon'] ?? today.month;
+      final int eDay = data['end_day'] ?? today.day;
+      final int eTime = data['end_time'] ?? 9;
+      final int eMin = data['end_min'] ?? 0;
+
+      final DateTime startTime = DateTime(sYear, sMon, sDay, sTime, sMin);
+      final DateTime endTime = DateTime(eYear, eMon, eDay, eTime, eMin);
+      final String title = data['title'];
+      final String detail = data['detail'];
+      final Color background = Color(int.parse(data['color'], radix: 16));
+
+      if(id == seletedId) meetings.add(Meeting(id, title, detail, startTime, endTime, background, true));
+      else meetings.add(Meeting(id, title, detail, startTime, endTime, background, false));
+    }
+
+    final List<Meeting> betweenMeetings = <Meeting>[];
+    for(Meeting i in meetings){
+      if(between == i.start || between == i.end || (between.isAfter(i.start) && between.isBefore(i.end))) {
+        betweenMeetings.add(i);
+      }
+    }
+
+    setState(() {
+      updatedAppointment = meetings;
+      initialAppointment = betweenMeetings;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: <Widget>[
+          SizedBox(height: 40,),
+          Row(
+            children: [
+              SizedBox(width:20 ),
+              Container(
+                height: 50,
+                child: Text(
+                  '달력',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.1,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ],
+          ),
           Expanded(
             child: SfCalendar(
               view: CalendarView.month,
-              dataSource: MeetingDataSource(getDataSource()),
+              dataSource: MeetingDataSource(updatedAppointment),
+              initialSelectedDate: widget.data,
+              initialDisplayDate: widget.data,
               onTap: (CalendarTapDetails details) {
                 print(details.targetElement.toString());
                 if (details.targetElement == CalendarElement.calendarCell) {
@@ -48,45 +121,64 @@ class _CalendarUIState extends State<CalendarUI> {
 
           if (agendaMode == 0)
             Container(
-              height: 200, // Or any other height you want.
-              color: Colors.grey[200],
-              child: Column(
-                children: <Widget>[
-                  Text('No Event!!'),
-                  // Add other appointment details here.
+              height: MediaQuery.of(context).size.height * 0.28, // Or any other height you want.
+              color: Colors.white,
+              child: Row(
+                children: [
+                  Image.asset('images/sun.png'),
+                  Container(
+                    color: Colors.white,
+                    child: Text("일정이 없어요!!",
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.07
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
 
           if (agendaMode == 1)
             SizedBox(
-              height: 200,
+              height: MediaQuery.of(context).size.height * 0.28,
               child: ListView.builder(
-                itemCount: selectedTileIndex == -1 ? selectedAppointment!.length : selectedAppointment!.length+1,
+                itemCount: selectedAppointment!.length,
                 itemBuilder: (context, index) {
-                  int realindex = index;
-                  if(selectedTileIndex >= 0 && index > selectedTileIndex) realindex = index-1;
-
-                  if (selectedTileIndex >= 0 && index == selectedTileIndex + 1) {
-                    return Container(
-                      height: 100,
-                      color: Colors.green,
-                      child: Center(child: Text(selectedAppointment![index-1].detail)),
-                    );
-                  }
                   return Card(
-                    child: ListTile(
-                        title: Text('${selectedAppointment![realindex].title}'),
-                        leading: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: Text(selectedAppointment![realindex].end.toString()),
+                    color: selectedAppointment![index].background,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                            // tileColor: selectedAppointment![index].background,
+                            title: Text(selectedAppointment![index].title),
+                            leading: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(DateFormat('yyyy. MM. dd ').format(selectedAppointment![index].start).toString()),
+                                Text("~"),
+                                Text(DateFormat('yyyy. MM. dd ').format(selectedAppointment![index].end).toString())
+                              ],
+                            ),
+                            onTap: () {
+                              setState(() {
+                                selectedAppointment![index].isSelected = !selectedAppointment![index].isSelected;
+                              });
+                            }
                         ),
-                        onTap: () {
-                          setState(() {
-                            selectedTileIndex = realindex;
-                          });
-                        }
+                        if(selectedAppointment![index].isSelected)
+                          Column(
+                            children: [
+                              Divider(
+                                  thickness: 0.7,
+                                  color: Colors.grey[700]),
+                              Container(
+                                height: 100,
+                                child: Center(child: Text(selectedAppointment![index].detail)),
+                              ),
+                            ],
+                          )
+                      ],
                     ),
                   );
                 },
@@ -94,50 +186,57 @@ class _CalendarUIState extends State<CalendarUI> {
             ),
 
           if (agendaMode == 2)
-            Container(
-              height: 200, // Or any other height you want.
-              color: Colors.grey[200],
-              child: Column(
-                children: <Widget>[
-                  Text('Start: agenda Mode 2'),
-                  // Add other appointment details here.
-                ],
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.28,
+              child: ListView.builder(
+                itemCount: initialAppointment?.length ?? 0,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: initialAppointment![index].background,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                            // tileColor: initialAppointment![index].background,
+                            title: Text(initialAppointment![index].title),
+                            leading: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(DateFormat('yyyy. MM. dd ').format(initialAppointment![index].start).toString()),
+                                Text("~"),
+                                Text(DateFormat('yyyy. MM. dd ').format(initialAppointment![index].end).toString())
+                              ],
+                            ),
+                            onTap: () {
+                              setState(() {
+                                initialAppointment![index].isSelected = !initialAppointment![index].isSelected;
+                              });
+                            }
+                        ),
+                        if(initialAppointment![index].isSelected)
+                          Column(
+                            children: [
+                              Divider(
+                                thickness: 0.7,
+                                color: Colors.grey[700]),
+                              Container(
+                                height: 100,
+                                child: Center(child: Text(initialAppointment![index].detail)),
+                              ),
+                            ],
+                          )
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
+
 
 
         ],
       ),
     );
-  }
-  Future<List<Meeting>> getDataSource() async {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    // Use DBManager to get data
-    List<Map<String, dynamic>> dataList = await DBManager().selectData();
-    for (final data in dataList) {
-      final int sYear = data['sYear'] ?? today.year;
-      final int sMon = data['sMon'] ?? today.month;
-      final int sDay = data['sDay'] ?? today.day;
-      final int sTime = data['sTime'] ?? 9;
-      final int sMin = data['sMin'] ?? 0;
-      final int eYear = data['eYear'] ?? today.year;
-      final int eMon = data['eMon'] ?? today.month;
-      final int eDay = data['eDay'] ?? today.day;
-      final int eTime = data['eTime'] ?? 9;
-      final int eMin = data['eMin'] ?? 0;
-
-      print(data);
-      final DateTime startTime = DateTime(sYear, sMon, sDay, sTime, sMin);
-      final DateTime endTime = DateTime(eYear, eMon, eDay, eTime, eMin);
-      final String title = data['title'];
-      final String detail = data['detail'];
-      final Color background = Color(int.parse(data['color'], radix: 16));
-
-      meetings.add(Meeting(title, detail, startTime, endTime, background));
-    }
-
-    return meetings;
   }
 }
 
@@ -147,10 +246,8 @@ class _CalendarUIState extends State<CalendarUI> {
 class MeetingDataSource extends CalendarDataSource {
   /// Creates a meeting data source, which used to set the appointment
   /// collection to the calendar
-  MeetingDataSource(Future<List<Meeting>> source) {
-    source.then((List<Meeting> meetings) {
-      appointments = meetings;
-    });
+  MeetingDataSource(List<Meeting>? source) {
+    appointments = source;
   }
 
   @override
@@ -173,6 +270,11 @@ class MeetingDataSource extends CalendarDataSource {
     return _getMeetingData(index).background;
   }
 
+  @override
+  bool isSelected(int index) {
+    return _getMeetingData(index).isSelected;
+  }
+
   Meeting _getMeetingData(int index) {
     final dynamic meeting = appointments![index];
     late final Meeting meetingData;
@@ -188,7 +290,9 @@ class MeetingDataSource extends CalendarDataSource {
 /// information about the event data which will be rendered in calendar.
 class Meeting {
   /// Creates a meeting class with required details.
-  Meeting(this.title, this.detail, this.start, this.end, this.background);
+  Meeting(this.id, this.title, this.detail, this.start, this.end, this.background, this.isSelected);
+
+  int id;
 
   /// Event name which is equivalent to subject property of [Appointment].
   String title;
@@ -204,4 +308,6 @@ class Meeting {
 
   /// Background which is equivalent to color property of [Appointment].
   Color background;
+
+  bool isSelected;
 }
