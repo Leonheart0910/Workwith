@@ -11,8 +11,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: UI(),
+    return MaterialApp(
+      home: const UI(),
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
     );
   }
 }
@@ -25,36 +28,57 @@ class UI extends StatefulWidget {
 }
 
 class _UIState extends State<UI> {
-  int _curIndex = 0;
+  int _selectedAppointmentId = -1;
+  int _currentPage = 0;
+  DateTime _selectedAppointmentDay = DateTime.now();
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      MemosUI(onChangePage: (index, info, id) => _changePage(index, info, id)),
+      CalendarUI(data: _selectedAppointmentDay, id: _selectedAppointmentId),
+    ];
+  }
+
+
+  void _changePage(int index, DateTime info, int id) {
+    setState(() {
+      _currentPage = index;
+      _selectedAppointmentDay = info;
+      _selectedAppointmentId = id;
+      // Update _pages with the new info.
+      _pages = [
+        MemosUI(onChangePage: (index, info, id) => _changePage(index, info, id)),
+        CalendarUI(data: _selectedAppointmentDay, id: _selectedAppointmentId),
+      ];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: getPage(),
+      body: _pages[_currentPage],
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          setState(() {
-            _curIndex = index;
-          });
-        },
-
-        currentIndex: _curIndex,  // 현재 탭
-        selectedItemColor: Colors.blue, // 선택된 탭의 색
-        unselectedItemColor: Colors.black54,  // 선택되지 않은 탭의 색
+        currentIndex: _currentPage,  // 현재 탭
+        onTap: (index) => _changePage(index, DateTime.now(), -1),
+        selectedItemColor: Colors.black, // 선택된 탭의 색
+        unselectedItemColor: Colors.grey,   // 선택되지 않은 탭의 색
         items: [
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.task_outlined,
-                size: 30,
-                color: _curIndex == 0 ? Colors.blue : Colors.black54,
+                IconData(0xf030f, fontFamily: 'MaterialIcons'),
+                size: 40,
+                color: _currentPage == 0 ? Colors.black : Colors.grey,
               ),
               label: "메모"
           ),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.calendar_today_outlined,
-                size: 30,
-                color: _curIndex == 1 ? Colors.blue : Colors.black54,
+                IconData(0xf06bb, fontFamily: 'MaterialIcons'),
+                size: 40,
+                color: _currentPage == 1 ?  Colors.black : Colors.grey,
               ),
               label: "달력"
           ),
@@ -62,14 +86,13 @@ class _UIState extends State<UI> {
       ),
     );
   }
-  Widget getPage() {
-    switch (_curIndex) {
-      case 0 :
-        return const MemosUI();
-      default:
-        return const CalendarUI();
-    }
-  }
+// Widget getPage() {
+//   switch (_curIndex) {
+//     case 0 :
+//       return const MemosUI();
+//     default:
+//       return const CalendarUI();
+//   }
+// }
 }
-
 
