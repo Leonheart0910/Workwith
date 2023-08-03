@@ -51,8 +51,11 @@ class _CalendarUIState extends State<CalendarUI> {
       final String detail = data['detail'];
       final Color background = Color(int.parse(data['color'], radix: 16));
 
-      if(id == seletedId) meetings.add(Meeting(id, title, detail, startTime, endTime, background, true));
-      else meetings.add(Meeting(id, title, detail, startTime, endTime, background, false));
+      if(id == seletedId) {
+        meetings.add(Meeting(id, title, detail, startTime, endTime, background, true));
+      } else {
+        meetings.add(Meeting(id, title, detail, startTime, endTime, background, false));
+      }
     }
 
     final List<Meeting> betweenMeetings = <Meeting>[];
@@ -71,170 +74,154 @@ class _CalendarUIState extends State<CalendarUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          SizedBox(height: 40,),
-          Row(
-            children: [
-              SizedBox(width:20 ),
-              Container(
-                height: 50,
-                child: Text(
-                  '달력',
-                  style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width * 0.1,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: SfCalendar(
-              view: CalendarView.month,
-              dataSource: MeetingDataSource(updatedAppointment),
-              initialSelectedDate: widget.data,
-              initialDisplayDate: widget.data,
-              onTap: (CalendarTapDetails details) {
-                print(details.targetElement.toString());
-                if (details.targetElement == CalendarElement.calendarCell) {
-                  if (details.appointments!.isEmpty){
-                    setState(() { agendaMode = 0; });
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: SfCalendar(
+                view: CalendarView.month,
+                dataSource: MeetingDataSource(updatedAppointment),
+                initialSelectedDate: widget.data,
+                initialDisplayDate: widget.data,
+                onTap: (CalendarTapDetails details) {
+                  print(details.targetElement.toString());
+                  if (details.targetElement == CalendarElement.calendarCell) {
+                    if (details.appointments!.isEmpty){
+                      setState(() { agendaMode = 0; });
+                    }
+                    else {
+                      setState(() {
+                        agendaMode = 1;
+                        selectedAppointment = details.appointments;
+                      });
+                    }
                   }
                   else {
-                    setState(() {
-                      agendaMode = 1;
-                      selectedAppointment = details.appointments;
-                    });
+                    setState(() { agendaMode = 2; });
                   }
-                }
-                else {
-                  setState(() { agendaMode = 2; });
-                }
-              },
-              monthViewSettings: MonthViewSettings(appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-              // Add your other calendar settings here.
-            ),
-          ),
-
-          if (agendaMode == 0)
-            Container(
-              height: MediaQuery.of(context).size.height * 0.28, // Or any other height you want.
-              color: Colors.white,
-              child: Row(
-                children: [
-                  Image.asset('images/sun.png'),
-                  Container(
-                    color: Colors.white,
-                    child: Text("일정이 없어요!!",
-                      style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * 0.07
-                      ),
-                    ),
-                  )
-                ],
+                },
+                monthViewSettings: const MonthViewSettings(appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+                // Add your other calendar settings here.
               ),
             ),
 
-          if (agendaMode == 1)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.28,
-              child: ListView.builder(
-                itemCount: selectedAppointment!.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: selectedAppointment![index].background,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                            // tileColor: selectedAppointment![index].background,
-                            title: Text(selectedAppointment![index].title),
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(DateFormat('yyyy. MM. dd ').format(selectedAppointment![index].start).toString()),
-                                Text("~"),
-                                Text(DateFormat('yyyy. MM. dd ').format(selectedAppointment![index].end).toString())
-                              ],
-                            ),
-                            onTap: () {
-                              setState(() {
-                                selectedAppointment![index].isSelected = !selectedAppointment![index].isSelected;
-                              });
-                            }
+            if (agendaMode == 0)
+              Container(
+                height: MediaQuery.of(context).size.height * 0.25, // Or any other height you want.
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Image.asset('images/sun.png'),
+                    Container(
+                      color: Colors.white,
+                      child: Text("일정이 없어요!!",
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * 0.07
                         ),
-                        if(selectedAppointment![index].isSelected)
-                          Column(
-                            children: [
-                              Divider(
+                      ),
+                    )
+                  ],
+                ),
+              ),
+
+            if (agendaMode == 1)
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: ListView.builder(
+                  itemCount: selectedAppointment!.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: selectedAppointment![index].background,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                              // tileColor: selectedAppointment![index].background,
+                              title: Text(selectedAppointment![index].title),
+                              leading: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(DateFormat('yyyy. MM. dd ').format(selectedAppointment![index].start).toString()),
+                                  const Text("~"),
+                                  Text(DateFormat('yyyy. MM. dd ').format(selectedAppointment![index].end).toString())
+                                ],
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  selectedAppointment![index].isSelected = !selectedAppointment![index].isSelected;
+                                });
+                              }
+                          ),
+                          if(selectedAppointment![index].isSelected)
+                            Column(
+                              children: [
+                                Divider(
+                                    thickness: 0.7,
+                                    color: Colors.grey[700]),
+                                SizedBox(
+                                  height: 100,
+                                  child: Center(child: Text(selectedAppointment![index].detail)),
+                                ),
+                              ],
+                            )
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+            if (agendaMode == 2)
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: ListView.builder(
+                  itemCount: initialAppointment?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: initialAppointment![index].background,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                              // tileColor: initialAppointment![index].background,
+                              title: Text(initialAppointment![index].title),
+                              leading: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(DateFormat('yyyy. MM. dd ').format(initialAppointment![index].start).toString()),
+                                  const Text("~"),
+                                  Text(DateFormat('yyyy. MM. dd ').format(initialAppointment![index].end).toString())
+                                ],
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  initialAppointment![index].isSelected = !initialAppointment![index].isSelected;
+                                });
+                              }
+                          ),
+                          if(initialAppointment![index].isSelected)
+                            Column(
+                              children: [
+                                Divider(
                                   thickness: 0.7,
                                   color: Colors.grey[700]),
-                              Container(
-                                height: 100,
-                                child: Center(child: Text(selectedAppointment![index].detail)),
-                              ),
-                            ],
-                          )
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
-          if (agendaMode == 2)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.28,
-              child: ListView.builder(
-                itemCount: initialAppointment?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: initialAppointment![index].background,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                            // tileColor: initialAppointment![index].background,
-                            title: Text(initialAppointment![index].title),
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(DateFormat('yyyy. MM. dd ').format(initialAppointment![index].start).toString()),
-                                Text("~"),
-                                Text(DateFormat('yyyy. MM. dd ').format(initialAppointment![index].end).toString())
+                                SizedBox(
+                                  height: 100,
+                                  child: Center(child: Text(initialAppointment![index].detail)),
+                                ),
                               ],
-                            ),
-                            onTap: () {
-                              setState(() {
-                                initialAppointment![index].isSelected = !initialAppointment![index].isSelected;
-                              });
-                            }
-                        ),
-                        if(initialAppointment![index].isSelected)
-                          Column(
-                            children: [
-                              Divider(
-                                thickness: 0.7,
-                                color: Colors.grey[700]),
-                              Container(
-                                height: 100,
-                                child: Center(child: Text(initialAppointment![index].detail)),
-                              ),
-                            ],
-                          )
-                      ],
-                    ),
-                  );
-                },
+                            )
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
 
 
 
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -270,7 +257,6 @@ class MeetingDataSource extends CalendarDataSource {
     return _getMeetingData(index).background;
   }
 
-  @override
   bool isSelected(int index) {
     return _getMeetingData(index).isSelected;
   }
