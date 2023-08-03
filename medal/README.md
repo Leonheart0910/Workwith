@@ -62,3 +62,9 @@ Medal (Memo+Calendar) for DX sprint 2023 for Android
 
 # 2023/07/26
 - 안드로이드 앱으로 완성, 오류 수정
+
+# 2023/07/28
+- 앱 '해와 달' 원스토어에 출시
+  - https://onesto.re/0000770703
+    당신의 낮과 밤을 관리하는 내손안의 작은 캘린더
+- DX Sprint 종료, 입상은 실패 -> DX Camp에 참여하면서 활동 계속

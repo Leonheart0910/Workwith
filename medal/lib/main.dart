@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: const UI(),
       theme: ThemeData(
         useMaterial3: true,
@@ -68,7 +69,7 @@ class _UIState extends State<UI> {
         items: [
           BottomNavigationBarItem(
               icon: Icon(
-                IconData(0xf030f, fontFamily: 'MaterialIcons'),
+                const IconData(0xf030f, fontFamily: 'MaterialIcons'),
                 size: 40,
                 color: _currentPage == 0 ? Colors.black : Colors.grey,
               ),
@@ -76,7 +77,7 @@ class _UIState extends State<UI> {
           ),
           BottomNavigationBarItem(
               icon: Icon(
-                IconData(0xf06bb, fontFamily: 'MaterialIcons'),
+                const IconData(0xf06bb, fontFamily: 'MaterialIcons'),
                 size: 40,
                 color: _currentPage == 1 ?  Colors.black : Colors.grey,
               ),
